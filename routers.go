@@ -23,6 +23,7 @@ import (
 	"github.com/astaxie/beego/context"
 	"github.com/bmizerany/pat"
 	"github.com/go-playground/lars"
+	"github.com/pressly/chi"
 	// "github.com/daryl/zeus"
 	"github.com/dimfeld/httptreemux"
 	"github.com/emicklei/go-restful"
@@ -287,6 +288,56 @@ func loadBoneSingle(method, path string, handler http.Handler) http.Handler {
 		panic("Unknow HTTP method: " + method)
 	}
 	return router
+}
+
+// chi
+func chiHandleWrite(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, chi.URLParam(r, "name"))
+}
+
+func loadChi(routes []route) http.Handler {
+	h := httpHandlerFunc
+	if loadTestHandler {
+		h = httpHandlerFuncTest
+	}
+
+	mux := chi.NewRouter()
+	for _, route := range routes {
+		switch route.method {
+		case "GET":
+			mux.Get(route.path, h)
+		case "POST":
+			mux.Post(route.path, h)
+		case "PUT":
+			mux.Put(route.path, h)
+		case "PATCH":
+			mux.Patch(route.path, h)
+		case "DELETE":
+			mux.Delete(route.path, h)
+		default:
+			panic("Unknown HTTP method: " + route.method)
+		}
+	}
+	return mux
+}
+
+func loadChiSingle(method, path string, handler http.HandlerFunc) http.Handler {
+	mux := chi.NewRouter()
+	switch method {
+	case "GET":
+		mux.Get(path, handler)
+	case "POST":
+		mux.Post(path, handler)
+	case "PUT":
+		mux.Put(path, handler)
+	case "PATCH":
+		mux.Patch(path, handler)
+	case "DELETE":
+		mux.Delete(path, handler)
+	default:
+		panic("Unknown HTTP method: " + method)
+	}
+	return mux
 }
 
 // Denco
@@ -761,10 +812,22 @@ func loadLiberty(routes []route) http.Handler {
 		h = http.HandlerFunc(httpHandlerFuncTest)
 	}
 	r := liberty.NewHTTPRouter()
-	r.Use(nil)
 
 	for _, route := range routes {
-		r.Handle(route.path, h)
+		switch route.method {
+		case "GET":
+			r.Get(route.path, h)
+		case "POST":
+			r.Post(route.path, h)
+		case "PUT":
+			r.Put(route.path, h)
+		case "PATCH":
+			r.Patch(route.path, h)
+		case "DELETE":
+			r.Delete(route.path, h)
+		default:
+			panic("Unknown HTTP method: " + route.method)
+		}
 	}
 
 	return r
@@ -772,9 +835,20 @@ func loadLiberty(routes []route) http.Handler {
 func loadLibertySingle(method, path string, handler http.Handler) http.Handler {
 
 	r := liberty.NewHTTPRouter()
-	r.Use(nil)
-	r.Handle(path, handler)
-
+	switch method {
+	case "GET":
+		r.Get(path, handler)
+	case "POST":
+		r.Post(path, handler)
+	case "PUT":
+		r.Put(path, handler)
+	case "PATCH":
+		r.Patch(path, handler)
+	case "DELETE":
+		r.Delete(path, handler)
+	default:
+		panic("Unknown HTTP method: " + method)
+	}
 	return r
 }
 

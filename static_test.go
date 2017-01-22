@@ -176,6 +176,7 @@ var (
 	staticBear        http.Handler
 	staticBeego       http.Handler
 	staticBone        http.Handler
+	staticChi         http.Handler
 	staticDenco       http.Handler
 	staticGin         http.Handler
 	staticGocraftWeb  http.Handler
@@ -226,6 +227,9 @@ func init() {
 	})
 	calcMem("Bone", func() {
 		staticBone = loadBone(staticRoutes)
+	})
+	calcMem("Chi", func() {
+		staticChi = loadChi(staticRoutes)
 	})
 	calcMem("Denco", func() {
 		staticDenco = loadDenco(staticRoutes)
@@ -325,6 +329,9 @@ func BenchmarkBear_StaticAll(b *testing.B) {
 }
 func BenchmarkBone_StaticAll(b *testing.B) {
 	benchRoutes(b, staticBone, staticRoutes)
+}
+func BenchmarkChi_StaticAll(b *testing.B) {
+	benchRoutes(b, staticChi, staticRoutes)
 }
 func BenchmarkDenco_StaticAll(b *testing.B) {
 	benchRoutes(b, staticDenco, staticRoutes)
