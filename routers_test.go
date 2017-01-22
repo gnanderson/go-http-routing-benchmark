@@ -29,6 +29,7 @@ var (
 		{"HttpTreeMux", loadHttpTreeMux},
 		//{"Kocha", loadKocha},
 		{"LARS", loadLARS},
+		//{"Liberty", loadLiberty},
 		{"Macaron", loadMacaron},
 		{"Martini", loadMartini},
 		{"Pat", loadPat},

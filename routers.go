@@ -52,6 +52,7 @@ import (
 	gojiv2 "goji.io"
 	gojiv2pat "goji.io/pat"
 	gcontext "golang.org/x/net/context"
+	liberty "golang.scot/liberty/router"
 )
 
 type route struct {
@@ -751,6 +752,36 @@ func loadHttpRouterSingle(method, path string, handle httprouter.Handle) http.Ha
 	router := httprouter.New()
 	router.Handle(method, path, handle)
 	return router
+}
+
+// liberty
+func loadLiberty(routes []route) http.Handler {
+	h := http.HandlerFunc(httpHandlerFunc)
+	if loadTestHandler {
+		h = http.HandlerFunc(httpHandlerFuncTest)
+	}
+	r := liberty.NewHTTPRouter()
+	r.Use(nil)
+
+	for _, route := range routes {
+		r.Handle(route.path, h)
+	}
+
+	return r
+}
+func loadLibertySingle(method, path string, handler http.Handler) http.Handler {
+
+	r := liberty.NewHTTPRouter()
+	r.Use(nil)
+	r.Handle(path, handler)
+
+	return r
+}
+
+func libertyHandleWrite(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context().Value(liberty.CtxKey).(*liberty.Context)
+	io.WriteString(w, ctx.Params.Get("name"))
+	//io.WriteString(w, "gordon")
 }
 
 // httpTreeMux

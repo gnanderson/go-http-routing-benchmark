@@ -2,3 +2,5 @@
 *.prof
 *.res
 *.test
+*.out
+vendor/*
