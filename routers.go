@@ -811,20 +811,26 @@ func loadLiberty(routes []route) http.Handler {
 	if loadTestHandler {
 		h = http.HandlerFunc(httpHandlerFuncTest)
 	}
-	r := liberty.NewHTTPRouter()
+	r := liberty.NewRouter()
+
+	var testErr = func(err error) {
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	for _, route := range routes {
 		switch route.method {
 		case "GET":
-			r.Get(route.path, h)
+			testErr(r.Get(route.path, h))
 		case "POST":
-			r.Post(route.path, h)
+			testErr(r.Post(route.path, h))
 		case "PUT":
-			r.Put(route.path, h)
+			testErr(r.Put(route.path, h))
 		case "PATCH":
-			r.Patch(route.path, h)
+			testErr(r.Patch(route.path, h))
 		case "DELETE":
-			r.Delete(route.path, h)
+			testErr(r.Delete(route.path, h))
 		default:
 			panic("Unknown HTTP method: " + route.method)
 		}
@@ -834,18 +840,24 @@ func loadLiberty(routes []route) http.Handler {
 }
 func loadLibertySingle(method, path string, handler http.Handler) http.Handler {
 
-	r := liberty.NewHTTPRouter()
+	var testErr = func(err error) {
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	r := liberty.NewRouter()
 	switch method {
 	case "GET":
-		r.Get(path, handler)
+		testErr(r.Get(path, handler))
 	case "POST":
-		r.Post(path, handler)
+		testErr(r.Post(path, handler))
 	case "PUT":
-		r.Put(path, handler)
+		testErr(r.Put(path, handler))
 	case "PATCH":
-		r.Patch(path, handler)
+		testErr(r.Patch(path, handler))
 	case "DELETE":
-		r.Delete(path, handler)
+		testErr(r.Delete(path, handler))
 	default:
 		panic("Unknown HTTP method: " + method)
 	}
